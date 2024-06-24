@@ -115,10 +115,9 @@ def generate_memory_dataset(
     all_states = jnp.vstack(all_states)
     all_parameters = jnp.vstack(all_parameters)
 
-    # has to be a better way of doing this
-    traces_and_states = np.empty((len(y_list) * traces_per_y, num_frames, 2))
-    traces_and_states[:, :, 0] = all_traces
-    traces_and_states[:, :, 1] = all_states
-    traces_and_states = jnp.array(traces_and_states)
+    traces_and_states = jnp.concat(
+        (jnp.expand_dims(all_traces, axis=2), jnp.expand_dims(all_states, axis=2)),
+        axis=2,
+    )
 
     return traces_and_states, all_parameters
