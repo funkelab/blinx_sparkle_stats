@@ -4,10 +4,9 @@ import blinx
 import blinx.trace_model
 import jax
 import jax.numpy as jnp
-from blinx.parameters import Parameters
 from jax import random
 
-from sparkle_stats.sample_parameters import PARAMETER_COUNT
+from sparkle_stats.parameters_util import parameters_array_to_object
 
 
 def vmap_generate_traces(y, parameters, num_frames, hyper_parameters, seed=None):
@@ -64,31 +63,3 @@ def _generate_trace_from_packed_params(
     return blinx.trace_model.generate_trace(
         y, parameters_obj, num_frames, hyper_parameters, seed
     )
-
-
-def parameters_array_to_object(parameters):
-    """Convert a flattened parameters array into a Parameters object.
-
-    Args:
-        parameters (array):
-            1 x PARAMETER_COUNT array of parameters
-
-    Returns:
-        parameters (:class:`Parameters`)
-    """
-    r_e, r_bg, mu_ro, sigma_ro, gain, p_on, p_off = tuple(parameters)
-    return Parameters(r_e, r_bg, mu_ro, sigma_ro, gain, p_on, p_off)
-
-
-def parameter_list_to_array(parameters):
-    """Convert a list of parameters into an array that vmap_generate_traces accepts.
-
-    Args:
-        parameters (list):
-            A list of Parameters objects
-
-    Returns:
-        parameters (array):
-            Array of shape (len(parameters), PARAMETER_COUNT) that can be passed to vmap_generate_traces
-    """
-    return jnp.array(jax.tree.leaves(parameters)).reshape((-1, PARAMETER_COUNT))
