@@ -1,12 +1,12 @@
-import os
 import logging
+import os
 
-import numpy as np
 import jax.numpy as jnp
+import numpy as np
 import zarr
 
 from sparkle_stats.generate_traces import vmap_generate_traces
-from sparkle_stats.sample_parameters import sample_parameters, PARAMETER_COUNT
+from sparkle_stats.sample_parameters import PARAMETER_COUNT, sample_parameters
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)

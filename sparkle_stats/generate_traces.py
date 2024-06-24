@@ -1,9 +1,10 @@
+import time
+
 import blinx
 import blinx.trace_model
-from blinx.parameters import Parameters
-import time
 import jax
 import jax.numpy as jnp
+from blinx.parameters import Parameters
 from jax import random
 
 from sparkle_stats.sample_parameters import PARAMETER_COUNT

@@ -11,13 +11,15 @@ description = "transformer models gone blinky"
 readme = "README.md"
 license = { text = "MIT" }
 authors = [
-    { name = 'Jan Funke', email = 'funkej@janelia.hhmi.org' },
-    { name = 'Alex Hillsley', email = 'hillsleya@janelia.hhmi.org' },
+    { name = "Jan Funke", email = "funkej@janelia.hhmi.org" },
+    { name = "Alex Hillsley", email = "hillsleya@janelia.hhmi.org" },
+    { name = "Alex Hillsley", email = "thambiduraiy@janelia.hhmi.org" },
 ]
 dynamic = ["version"]
 dependencies = [
     "jax",
-    "blinx"]
+    "blinx",
+]
 
 
 [project.optional-dependencies]

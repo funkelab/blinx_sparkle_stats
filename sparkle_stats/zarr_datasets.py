@@ -30,8 +30,11 @@ class ZarrTraceDataset(Dataset):
 
         self.trace_count = self._traces.shape[0]
 
-        if self._parameters.shape[0] != self.trace_count:
-            raise ValueError(f"Found {self._parameters.shape[0]} parameters but {self.trace_count} traces")
+        parameters_length = self._parameters.shape[0]
+        if parameters_length != self.trace_count:
+            raise ValueError(
+                f"Found {parameters_length} parameters but {self.trace_count} traces"
+            )
 
     def __len__(self):
         return self.trace_count
@@ -39,7 +42,10 @@ class ZarrTraceDataset(Dataset):
     def __getitem__(self, item):
         # goes from (n,t) array into (t,)
         # reshaping into (1,t) should better fit api for blinx
-        return self._traces[item, :, :].reshape(1, -1), self._parameters[item, :].reshape(1, -1)
+        return (
+            self._traces[item, :, :].reshape(1, -1),
+            self._parameters[item, :].reshape(1, -1),
+        )
 
 
 class ZarrIntensityOnlyDataset(ZarrTraceDataset):

@@ -1,4 +1,4 @@
-from sparkle_stats.sample_parameters import sample_parameters, PARAMETER_COUNT
+from sparkle_stats.sample_parameters import PARAMETER_COUNT, sample_parameters
 
 
 def test_sample_parameters():

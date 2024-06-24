@@ -1,6 +1,6 @@
 from blinx import HyperParameters
 from blinx.parameters import Parameters
-from sparkle_stats.generate_traces import vmap_generate_traces, parameter_list_to_array
+from sparkle_stats.generate_traces import parameter_list_to_array, vmap_generate_traces
 
 
 def test_vmap_generate_traces_with_different_params():
