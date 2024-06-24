@@ -33,7 +33,8 @@ def generate_zarr_dataset(
     """
 
     if not os.path.exists(data_dir):
-        raise FileNotFoundError(f"Directory {data_dir} not found")
+        os.mkdir(data_dir)
+
     if not os.path.isdir(data_dir):
         raise NotADirectoryError(f"Found file at {data_dir} expected directory")
 
