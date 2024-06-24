@@ -7,7 +7,7 @@ build-backend = "hatchling.build"
 # https://peps.python.org/pep-0621/
 [project]
 name = "sparkle_stats"
-description = "Counting of binding sites in fluorescence traces"
+description = "transformer models gone blinky"
 readme = "README.md"
 license = { text = "MIT" }
 authors = [
