@@ -1,5 +1,5 @@
 from blinx import HyperParameters
-from blinx.parameters import Parameters
+from blinx import Parameters
 from sparkle_stats.generate_traces import vmap_generate_traces
 from sparkle_stats.parameters_util import parameter_list_to_array
 
