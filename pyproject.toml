@@ -39,10 +39,12 @@ homepage = "https://github.com/funkelab/blinx_sparkle_stats"
 [tool.hatch.version]
 path = "sparkle_stats/__init__.py"
 
-# https://beta.ruff.rs/docs
+# https://docs.astral.sh/ruff/
 [tool.ruff]
 target-version = "py38"
 src = ["sparkle_stats"]
+
+[tool.ruff.lint]
 select = [
     "F", # pyflakes
     "E", # pycodestyle
@@ -50,6 +52,10 @@ select = [
     "UP", # pyupgrade
     "RUF", # ruff specific rules
 ]
+# ruff format takes care of this
+# errors on a lot of docstrings
+# can unignore and do `ruff check --add-noqa` instead
+ignore = ["E501"]
 
 # https://coverage.readthedocs.io/en/6.4/config.html
 [tool.coverage.report]
