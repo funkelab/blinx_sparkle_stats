@@ -1,7 +1,7 @@
 import os
-import zarr
+
 import jax.numpy as jnp
-import numpy as np
+import zarr
 
 from sparkle_stats.generate_traces import vmap_generate_traces
 from sparkle_stats.sample_parameters import sample_parameters, PARAMETER_COUNT
@@ -54,7 +54,6 @@ def generate_zarr_dataset(
     for idx, y in enumerate(y_list):
         parameters = sample_parameters(
             num_params=traces_per_y,
-            hyper_parameters=hyper_parameters,
             seed=seed,
         )
         zarr_parameters[idx * traces_per_y : (idx + 1) * traces_per_y, :] = parameters
@@ -100,7 +99,6 @@ def generate_memory_dataset(
     for y in y_list:
         parameters = sample_parameters(
             num_params=traces_per_y,
-            hyper_parameters=hyper_parameters,
             seed=seed,
         )
         all_parameters.append(parameters)
