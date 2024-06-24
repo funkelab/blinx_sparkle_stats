@@ -39,7 +39,7 @@ class ZarrTraceDataset(Dataset):
     def __getitem__(self, item):
         # goes from (n,t) array into (t,)
         # reshaping into (1,t) should better fit api for blinx
-        return self._traces[item, :].reshape(1, -1), self._parameters[item, :].reshape(1, -1)
+        return self._traces[item, :, :].reshape(1, -1), self._parameters[item, :].reshape(1, -1)
 
 
 class ZarrIntensityOnlyDataset(ZarrTraceDataset):
