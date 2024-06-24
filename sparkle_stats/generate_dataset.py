@@ -1,10 +1,13 @@
 import os
+import logging
 
 import jax.numpy as jnp
 import zarr
 
 from sparkle_stats.generate_traces import vmap_generate_traces
 from sparkle_stats.sample_parameters import sample_parameters, PARAMETER_COUNT
+
+logger = logging.getLogger(__name__)
 
 
 def generate_zarr_dataset(
@@ -53,17 +56,26 @@ def generate_zarr_dataset(
     )
 
     for idx, y in enumerate(y_list):
+        logger.debug(f"starting generating parameters for {y}")
         parameters = sample_parameters(
             num_params=traces_per_y,
             seed=seed,
         )
+        logger.debug(f"finished generating parameters for {y}")
         zarr_parameters[idx * traces_per_y : (idx + 1) * traces_per_y, :] = parameters
+        logger.debug(f"wrote parameters for {y}")
 
+        logger.debug(f"starting generating traces for {y}")
         traces, states = vmap_generate_traces(
             y, parameters, num_frames, hyper_parameters, seed=None
         )
+        logger.debug(f"finished generating traces for {y}")
         zarr_traces[idx * traces_per_y : (idx + 1) * traces_per_y, :, 0] = traces
+        logger.debug(f"wrote traces for {y}")
         zarr_traces[idx * traces_per_y : (idx + 1) * traces_per_y, :, 1] = states
+        logger.debug(f"wrote states for {y}")
+
+        logger.info(f"generated traces for {y}")
 
 
 def generate_memory_dataset(
