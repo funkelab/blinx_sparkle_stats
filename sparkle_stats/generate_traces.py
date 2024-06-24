@@ -60,11 +60,24 @@ def _generate_trace_from_packed_params(
         parameters (array):
             1 x PARAMETER_COUNT array of parameters passed to the Parameters constructor.
     """
-    r_e, r_bg, mu_ro, sigma_ro, gain, p_on, p_off = tuple(parameters)
-    parameters_obj = Parameters(r_e, r_bg, mu_ro, sigma_ro, gain, p_on, p_off)
+    parameters_obj = parameters_array_to_object(parameters)
     return blinx.trace_model.generate_trace(
         y, parameters_obj, num_frames, hyper_parameters, seed
     )
+
+
+def parameters_array_to_object(parameters):
+    """Convert a flattened parameters array into a Parameters object.
+
+    Args:
+        parameters (array):
+            1 x PARAMETER_COUNT array of parameters
+
+    Returns:
+        parameters (:class:`Parameters`)
+    """
+    r_e, r_bg, mu_ro, sigma_ro, gain, p_on, p_off = tuple(parameters)
+    return Parameters(r_e, r_bg, mu_ro, sigma_ro, gain, p_on, p_off)
 
 
 def parameter_list_to_array(parameters):
