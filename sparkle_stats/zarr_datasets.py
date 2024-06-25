@@ -44,7 +44,7 @@ class ZarrTraceDataset(Dataset):
         # goes from (n,t) array into (t,)
         # reshaping into (1,t) should better fit api for blinx
         return (
-            self._traces[item, :, :].reshape(1, -1),
+            self._traces[item, :, :].reshape(2, -1),
             self._parameters[item, :].reshape(1, -1),
         )
 
@@ -52,14 +52,16 @@ class ZarrTraceDataset(Dataset):
 class ZarrIntensityOnlyDataset(ZarrTraceDataset):
     """Zarr dataset with only the intensity for each trace."""
 
-    def __init__(self, data_dir):
-        super().__init__(data_dir)
-        self._traces = self._traces[:, :, 0]
+    def __getitem__(self, item):
+        trace, parameters = super().__getitem__(item)
+        trace = trace[0, :]
+        return trace, parameters
 
 
 class ZarrStateOnlyDataset(ZarrTraceDataset):
     """Zarr dataset with only the state for each trace."""
 
-    def __init__(self, data_dir):
-        super().__init__(data_dir)
-        self._traces = self._traces[:, :, 1]
+    def __getitem__(self, item):
+        trace, parameters = super().__getitem__(item)
+        trace = trace[1, :]
+        return trace, parameters
