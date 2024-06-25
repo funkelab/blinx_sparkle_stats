@@ -29,6 +29,7 @@ class ZarrTraceDataset(Dataset):
             raise ValueError(f"Expected 2d zarr array, found {self._parameters.ndim}d")
 
         self.trace_count = self._traces.shape[0]
+        self.trace_length = self._traces.shape[1]
 
         parameters_length = self._parameters.shape[0]
         if parameters_length != self.trace_count:
