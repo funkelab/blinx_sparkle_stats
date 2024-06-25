@@ -43,14 +43,14 @@ class ZarrTraceDataset(Dataset):
         return self.trace_count
 
     def __getitem__(self, item):
-        # goes from (n,t) array into (t,)
-        # reshaping into (1,t) should better fit api for blinx
+        # is currently NxTxC
+        # reshape into CxT
         return (
             torch.from_numpy(
                 self._traces[item, :, :].reshape(2, -1).astype(np.float32)
             ),
             torch.from_numpy(
-                self._parameters[item, :].reshape(1, -1).astype(np.float32)
+                self._parameters[item, :].reshape(-1).astype(np.float32)
             ),
         )
 
@@ -60,7 +60,9 @@ class ZarrIntensityOnlyDataset(ZarrTraceDataset):
 
     def __getitem__(self, item):
         trace, parameters = super().__getitem__(item)
-        trace = trace[0, :]
+        # is currently CxT
+        # reshape into 1xT
+        trace = trace[0, :].unsqueeze(0)
         return trace, parameters
 
 
@@ -69,5 +71,5 @@ class ZarrStateOnlyDataset(ZarrTraceDataset):
 
     def __getitem__(self, item):
         trace, parameters = super().__getitem__(item)
-        trace = trace[1, :]
+        trace = trace[1, :].unsqueeze(0)
         return trace, parameters
