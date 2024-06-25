@@ -1,5 +1,7 @@
 import os
 
+import numpy as np
+import torch
 import zarr
 from torch.utils.data import Dataset
 
@@ -44,8 +46,12 @@ class ZarrTraceDataset(Dataset):
         # goes from (n,t) array into (t,)
         # reshaping into (1,t) should better fit api for blinx
         return (
-            self._traces[item, :, :].reshape(2, -1),
-            self._parameters[item, :].reshape(1, -1),
+            torch.from_numpy(
+                self._traces[item, :, :].reshape(2, -1).astype(np.float32)
+            ),
+            torch.from_numpy(
+                self._parameters[item, :].reshape(1, -1).astype(np.float32)
+            ),
         )
 
 
