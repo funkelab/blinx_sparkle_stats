@@ -64,7 +64,14 @@ def generate_zarr_dataset(
             seed=seed,
         )
         logger.debug(f"finished generating parameters for y={y}")
+
+        # zarr eventually calls array.astype(..., order="K") on the jax array
+        # jax arrays don't implement the order kwarg even though its numpy standard
+        # have to convert the arrays into numpy arrays so it doesn't error out
+        # relevant lines: zarr.core.Array: _process_for_setitem#2287
+        parameters = np.array(parameters)
         zarr_parameters[idx * traces_per_y : (idx + 1) * traces_per_y, :] = parameters
+
         logger.debug(f"wrote parameters for y={y}")
 
         logger.debug(f"starting generating traces for y={y}")
@@ -73,11 +80,6 @@ def generate_zarr_dataset(
         )
         logger.debug(f"finished generating traces for y={y}")
 
-        # zarr eventually calls array.astype(..., order="K") on the jax array
-        # jax arrays don't implement the order kwarg even though its numpy standard
-        # have to convert the arrays into numpy arrays so it doesn't error out
-        # why doesn't this error out for saving the parameters though?
-        # relevant lines: zarr.core.Array: _process_for_setitem#2287
         traces = np.array(traces)
         states = np.array(states)
 
