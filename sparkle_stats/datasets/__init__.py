@@ -1,3 +1,8 @@
+from .memory_datasets import (
+    MemoryIntensityOnlyDataset,
+    MemoryStateOnlyDataset,
+    MemoryTraceDataset,
+)
 from .zarr_datasets import (
     ZarrIntensityOnlyDataset,
     ZarrStateOnlyDataset,
@@ -8,4 +13,7 @@ __all__ = [
     "ZarrStateOnlyDataset",
     "ZarrTraceDataset",
     "ZarrIntensityOnlyDataset",
+    "MemoryStateOnlyDataset",
+    "MemoryTraceDataset",
+    "MemoryIntensityOnlyDataset",
 ]
