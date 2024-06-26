@@ -51,6 +51,7 @@ class ZarrTraceDataset(Dataset):
         )
 
 
+# noinspection DuplicatedCode
 class ZarrIntensityOnlyDataset(ZarrTraceDataset):
     """Zarr dataset with only the intensity for each trace."""
 

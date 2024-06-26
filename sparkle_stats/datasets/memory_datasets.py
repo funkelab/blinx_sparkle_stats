@@ -57,6 +57,7 @@ class MemoryTraceDataset(Dataset):
         )
 
 
+# noinspection DuplicatedCode
 class MemoryIntensityOnlyDataset(MemoryTraceDataset):
     """Loads only intensities from a zarr into memory.
 
