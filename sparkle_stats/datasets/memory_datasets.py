@@ -24,8 +24,12 @@ class MemoryTraceDataset(Dataset):
         if not os.path.exists(parameters_path):
             raise FileNotFoundError(f"Can't find parameters at {parameters_path}")
 
-        self.traces = np.array(zarr.open(traces_path, mode="r"))
-        self.parameters = np.array(zarr.open(parameters_path, mode="r"))
+        self.traces = torch.from_numpy(
+            np.array(zarr.open(traces_path, mode="r")).astype(np.float32)
+        )
+        self.parameters = torch.from_numpy(
+            np.array(zarr.open(parameters_path, mode="r")).astype(np.float32)
+        )
 
         if self.traces.ndim != 3:
             raise ValueError(f"Expected 3d zarr array, found {self.traces.ndim}d")
@@ -48,8 +52,8 @@ class MemoryTraceDataset(Dataset):
         # is currently NxTxC
         # reshape into CxT
         return (
-            torch.from_numpy(self.traces[item, :, :].reshape(2, -1).astype(np.float32)),
-            torch.from_numpy(self.parameters[item, :].reshape(-1).astype(np.float32)),
+            self.traces[item, :, :].reshape(2, -1),
+            self.parameters[item, :].reshape(-1),
         )
 
 
