@@ -49,9 +49,7 @@ class ZarrTraceDataset(Dataset):
             torch.from_numpy(
                 self._traces[item, :, :].reshape(2, -1).astype(np.float32)
             ),
-            torch.from_numpy(
-                self._parameters[item, :].reshape(-1).astype(np.float32)
-            ),
+            torch.from_numpy(self._parameters[item, :].reshape(-1).astype(np.float32)),
         )
 
 
