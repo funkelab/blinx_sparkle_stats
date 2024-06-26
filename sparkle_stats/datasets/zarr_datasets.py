@@ -22,18 +22,18 @@ class ZarrTraceDataset(Dataset):
         if not os.path.exists(parameters_path):
             raise FileNotFoundError(f"Can't find parameters at {parameters_path}")
 
-        self._traces = zarr.open(traces_path, mode="r")
-        self._parameters = zarr.open(parameters_path, mode="r")
+        self.traces = zarr.open(traces_path, mode="r")
+        self.parameters = zarr.open(parameters_path, mode="r")
 
-        if self._traces.ndim != 3:
-            raise ValueError(f"Expected 3d zarr array, found {self._traces.ndim}d")
-        if self._parameters.ndim != 2:
-            raise ValueError(f"Expected 2d zarr array, found {self._parameters.ndim}d")
+        if self.traces.ndim != 3:
+            raise ValueError(f"Expected 3d zarr array, found {self.traces.ndim}d")
+        if self.parameters.ndim != 2:
+            raise ValueError(f"Expected 2d zarr array, found {self.parameters.ndim}d")
 
-        self.trace_count = self._traces.shape[0]
-        self.trace_length = self._traces.shape[1]
+        self.trace_count = self.traces.shape[0]
+        self.trace_length = self.traces.shape[1]
 
-        parameters_length = self._parameters.shape[0]
+        parameters_length = self.parameters.shape[0]
         if parameters_length != self.trace_count:
             raise ValueError(
                 f"Found {parameters_length} parameters but {self.trace_count} traces"
@@ -46,10 +46,8 @@ class ZarrTraceDataset(Dataset):
         # is currently NxTxC
         # reshape into CxT
         return (
-            torch.from_numpy(
-                self._traces[item, :, :].reshape(2, -1).astype(np.float32)
-            ),
-            torch.from_numpy(self._parameters[item, :].reshape(-1).astype(np.float32)),
+            torch.from_numpy(self.traces[item, :, :].reshape(2, -1).astype(np.float32)),
+            torch.from_numpy(self.parameters[item, :].reshape(-1).astype(np.float32)),
         )
 
 
