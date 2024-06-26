@@ -18,6 +18,7 @@ def generate_zarr_dataset(
     traces_per_y,
     num_frames,
     hyper_parameters,
+    traces_per_chunk=100_000,
     seed=None,
 ):
     """Generates a dataset stored as a zarr.
@@ -33,6 +34,8 @@ def generate_zarr_dataset(
             - length of a single trace
         hyper_parameters (:class:`HyperParameters`):
             - hyper parameters used for generating traces
+        traces_per_chunk (int, optional):
+            - how many traces to store in 1 zarr chunk
         seed (int, optional):
             - random seed for the jax psudo rendom number generator
     """
@@ -43,6 +46,12 @@ def generate_zarr_dataset(
     if not os.path.isdir(data_dir):
         raise NotADirectoryError(f"Found file at {data_dir} expected directory")
 
+    total_traces = y_list * traces_per_y
+    if (total_traces) % traces_per_chunk != 0:
+        raise ValueError(
+            f"Can't split {total_traces} traces into chunks of size {traces_per_chunk}"
+        )
+
     # the zarr is stored as an NxTx2 array, packing both the traces and states together
     traces_path = os.path.join(data_dir, "traces")
     parameters_path = os.path.join(data_dir, "parameters")
@@ -50,11 +59,13 @@ def generate_zarr_dataset(
         traces_path,
         mode="w",
         shape=(len(y_list) * traces_per_y, num_frames, 2),
+        chunks=(traces_per_chunk, num_frames, 2),
     )
     zarr_parameters = zarr.open(
         parameters_path,
         mode="w",
         shape=(len(y_list) * traces_per_y, PARAMETER_COUNT),
+        chunks=(traces_per_chunk, PARAMETER_COUNT),
     )
 
     for idx, y in enumerate(y_list):
