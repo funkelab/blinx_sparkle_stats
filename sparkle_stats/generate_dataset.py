@@ -46,7 +46,7 @@ def generate_zarr_dataset(
     if not os.path.isdir(data_dir):
         raise NotADirectoryError(f"Found file at {data_dir} expected directory")
 
-    total_traces = y_list * traces_per_y
+    total_traces = len(y_list) * traces_per_y
     if (total_traces) % traces_per_chunk != 0:
         raise ValueError(
             f"Can't split {total_traces} traces into chunks of size {traces_per_chunk}"
