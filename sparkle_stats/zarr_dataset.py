@@ -76,5 +76,5 @@ class ZarrDataset(Dataset):
 class ZarrIntensityOnlyDataset(ZarrDataset):
     def __getitem__(self, item):
         trace, parameters = super().__getitem__(item)
-        trace = trace[1, :].unsqueeze(0)
+        trace = trace[0, :].unsqueeze(0)
         return trace, parameters
