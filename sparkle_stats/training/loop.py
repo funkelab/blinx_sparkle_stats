@@ -57,6 +57,7 @@ def train(
     optimizer,
     loss_fn,
     save_path,
+    use_wandb=True,
 ):
     epoch_number = 0
     best_val_loss = None
@@ -67,13 +68,15 @@ def train(
         model.train()
         avg_train_loss = train_epoch(train_loader, model, optimizer, loss_fn)
 
-        wandb.log({"average training loss": avg_train_loss})
+        if use_wandb:
+            wandb.log({"average training loss": avg_train_loss})
         print(f"\n\ntrain loss:\t{avg_train_loss}")
 
         model.eval()
         avg_val_loss = validate_epoch(val_loader, model, loss_fn)
 
-        wandb.log({"average validation loss": avg_val_loss})
+        if use_wandb:
+            wandb.log({"average validation loss": avg_val_loss})
         print(f"val loss:\t{avg_val_loss}")
 
         epoch_number += 1
