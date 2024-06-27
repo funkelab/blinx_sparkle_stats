@@ -86,3 +86,13 @@ class ZarrStateOnlyDataset(ZarrDataset):
         trace = trace[1, :].unsqueeze(0)
         parameters = parameters[[5, 6]]
         return trace, parameters
+
+
+class ZarrNoCameraDataset(ZarrDataset):
+    """Zarr dataset that doesn't provide camera parameters"""
+
+    def __getitem__(self, item):
+        trace, parameters = super().__getitem__(item)
+        trace = trace[0, :].unsqueeze(0)
+        parameters = parameters[[0, 1, 5, 6]]
+        return trace, parameters
