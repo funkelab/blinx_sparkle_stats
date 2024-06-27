@@ -10,9 +10,10 @@ def test_generate_memory_dataset():
     hyper_parameters = HyperParameters()
     seed = 1
 
-    traces, parameters = generate_memory_dataset(
+    traces, parameters, all_ys = generate_memory_dataset(
         y_list, traces_per_y, num_frames, hyper_parameters, seed
     )
 
     assert traces.shape == (len(y_list) * traces_per_y, num_frames, 2)
     assert parameters.shape == (len(y_list) * traces_per_y, PARAMETER_COUNT)
+    assert all_ys.shape == (len(y_list) * traces_per_y)

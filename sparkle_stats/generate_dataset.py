@@ -55,6 +55,7 @@ def generate_zarr_dataset(
     # the zarr is stored as an NxTx2 array, packing both the traces and states together
     traces_path = os.path.join(data_dir, "traces")
     parameters_path = os.path.join(data_dir, "parameters")
+    y_path = os.path.join(data_dir, "y")
     zarr_traces = zarr.open(
         traces_path,
         mode="w",
@@ -67,8 +68,18 @@ def generate_zarr_dataset(
         shape=(len(y_list) * traces_per_y, PARAMETER_COUNT),
         chunks=(traces_per_chunk, PARAMETER_COUNT),
     )
+    # noinspection PyRedundantParentheses
+    zarr_y = zarr.open(
+        y_path,
+        mode="w",
+        shape=(len(y_list) * traces_per_y),
+        chunks=(1),
+    )
 
     for idx, y in enumerate(y_list):
+        zarr_y[idx * traces_per_y : (idx + 1)] = y
+        logger.debug(f"wrote y's for y={y}")
+
         logger.debug(f"starting generating parameters for y={y}")
         parameters = sample_parameters(
             num_params=traces_per_y,
@@ -129,10 +140,14 @@ def generate_memory_dataset(
 
         states (array):
             - array the same shape as trace, containing the number of 'on' emitters in each frame
+
+        ys (array):
+            - array with the y value for each trace
     """
     all_traces = []
     all_states = []
     all_parameters = []
+    all_ys = []
     for y in y_list:
         parameters = sample_parameters(
             num_params=traces_per_y,
@@ -145,14 +160,16 @@ def generate_memory_dataset(
         )
         all_traces.append(y_traces)
         all_states.append(y_states)
+        all_ys.append(y)
 
     all_traces = jnp.vstack(all_traces)
     all_states = jnp.vstack(all_states)
     all_parameters = jnp.vstack(all_parameters)
+    all_ys = jnp.vstack(all_ys)
 
     traces_and_states = jnp.concat(
         (jnp.expand_dims(all_traces, axis=2), jnp.expand_dims(all_states, axis=2)),
         axis=2,
     )
 
-    return traces_and_states, all_parameters
+    return traces_and_states, all_parameters, all_ys
