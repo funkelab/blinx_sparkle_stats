@@ -9,7 +9,6 @@ def train_epoch(
     model,
     optimizer,
     loss_fn,
-    log_after=5,
 ):
     running_loss = 0.0
     for idx, data in enumerate(train_loader):
@@ -24,8 +23,6 @@ def train_epoch(
         loss.backward()
 
         running_loss += loss_value
-        if idx % log_after == 0:
-            print(f"batch loss @ {idx + 1}: {loss_value}")
 
         optimizer.step()
 
