@@ -160,7 +160,7 @@ def generate_memory_dataset(
         )
         all_traces.append(y_traces)
         all_states.append(y_states)
-        all_ys.append(y)
+        all_ys.append(jnp.vstack([y] * num_frames))
 
     all_traces = jnp.vstack(all_traces)
     all_states = jnp.vstack(all_states)

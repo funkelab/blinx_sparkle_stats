@@ -16,4 +16,4 @@ def test_generate_memory_dataset():
 
     assert traces.shape == (len(y_list) * traces_per_y, num_frames, 2)
     assert parameters.shape == (len(y_list) * traces_per_y, PARAMETER_COUNT)
-    assert all_ys.shape == (len(y_list) * traces_per_y)
+    assert all_ys.shape == (len(y_list) * traces_per_y, 1)
