@@ -15,7 +15,7 @@ class Vgg1D(nn.Module):
         input_feature_maps: channels in the input
         """
 
-        super(Vgg1D, self).__init__()
+        super().__init__()
 
         current_feature_maps = input_feature_maps
         current_size = input_size
