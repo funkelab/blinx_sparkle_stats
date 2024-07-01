@@ -77,7 +77,7 @@ def generate_zarr_dataset(
     )
 
     for idx, y in enumerate(y_list):
-        zarr_y[idx * traces_per_y : (idx + 1)] = y
+        zarr_y[idx * traces_per_y : (idx + 1) * traces_per_y] = y
         logger.debug(f"wrote y's for y={y}")
 
         logger.debug(f"starting generating parameters for y={y}")
@@ -160,7 +160,7 @@ def generate_memory_dataset(
         )
         all_traces.append(y_traces)
         all_states.append(y_states)
-        all_ys.append(jnp.vstack([y] * num_frames))
+        all_ys.append(jnp.vstack([y] * traces_per_y))
 
     all_traces = jnp.vstack(all_traces)
     all_states = jnp.vstack(all_states)
