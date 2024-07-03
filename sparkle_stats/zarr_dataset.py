@@ -103,6 +103,8 @@ class ZarrDataset(Dataset):
                 )
                 torch.save(self.parameter_std_devs, existing_parameter_std_devs_path)
 
+        self.parameter_std_devs = self.parameter_std_devs.reshape(1, -1)
+
     # noinspection DuplicatedCode
     def _load_parameter_means(self, load_all, parameter_means):
         if parameter_means is not None and parameter_means.shape != (
@@ -132,11 +134,13 @@ class ZarrDataset(Dataset):
                 self.parameter_means = np.mean(self.parameters, axis=0).reshape(1, -1)
                 torch.save(self.parameter_means, existing_parameter_means_path)
 
+        self.parameter_means = self.parameter_means.reshape(1, -1)
+
     # noinspection DuplicatedCode
     def _load_trace_mean(self, load_all, trace_mean):
-        if trace_mean is not None and trace_mean.shape != 1:
+        if trace_mean is not None and trace_mean.shape != (1, 1):
             raise ValueError(
-                f"Expected means to be of shape (1), found {trace_mean.shape}"
+                f"Expected means to be of shape (1, 1), found {trace_mean.shape}"
             )
         elif trace_mean is not None:
             self.trace_mean = trace_mean
@@ -155,6 +159,8 @@ class ZarrDataset(Dataset):
             elif trace_mean is None:
                 self.trace_mean = np.mean(self.traces, axis=0).reshape(1, -1)
                 torch.save(self.trace_mean, existing_trace_means_path)
+
+        self.trace_mean = self.trace_mean.reshape(1, -1)
 
     def __len__(self):
         return self.trace_count
