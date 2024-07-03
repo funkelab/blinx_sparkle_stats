@@ -5,11 +5,13 @@ import torch
 import zarr
 from torch.utils.data import Dataset
 
+from sparkle_stats.sample_parameters import PARAMETER_COUNT
+
 
 class ZarrDataset(Dataset):
     """A dataset stored on the filesystem as a trace zarr and a parameter zarr."""
 
-    def __init__(self, data_dir, load_all=False):
+    def __init__(self, data_dir, means=None, std_devs=None, load_all=False):
         """
         Args:
             data_dir (string):
@@ -57,6 +59,28 @@ class ZarrDataset(Dataset):
                 f"Found {parameters_length} parameters but {self.trace_count} traces"
             )
 
+        if means is not None and means.shape != (1, PARAMETER_COUNT):
+            raise ValueError(
+                f"Expected means to be of shape (1 x {PARAMETER_COUNT}), found {means.shape}"
+            )
+        elif means is not None:
+            self.means = means
+        elif means is None and load_all:
+            self.means = torch.mean(self.parameters, axis=0)
+        elif means is None:
+            self.means = np.mean(self.parameters, axis=0)
+
+        if std_devs is not None and std_devs.shape != (1, PARAMETER_COUNT):
+            raise ValueError(
+                f"Expected standard deviations to be of shape (1 x {PARAMETER_COUNT}), found {std_devs.shape}"
+            )
+        elif std_devs is not None:
+            self.std_devs = std_devs
+        elif std_devs is None and load_all:
+            self.std_devs = torch.std(self.parameters, axis=0)
+        elif std_devs is None:
+            self.std_devs = np.std(self.parameters, mean=means, axis=0)
+
     def __len__(self):
         return self.trace_count
 
@@ -69,6 +93,8 @@ class ZarrDataset(Dataset):
         if not self.load_all:
             trace = torch.from_numpy(trace.astype(np.float32))
             parameters = torch.from_numpy(parameters.astype(np.float32))
+
+        parameters = (parameters - self.means) / self.std_devs
 
         return trace, parameters
 
