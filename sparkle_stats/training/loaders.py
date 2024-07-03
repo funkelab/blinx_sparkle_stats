@@ -5,12 +5,19 @@ def load_path(
     dataset_type,
     path,
     device,
-    means=None,
-    std_devs=None,
+    trace_mean=None,
+    parameter_means=None,
+    parameter_std_devs=None,
     load_all=True,
     batch_size=100,
 ):
-    ds = dataset_type(path, means=means, std_devs=std_devs, load_all=load_all)
+    ds = dataset_type(
+        path,
+        trace_mean=trace_mean,
+        parameter_means=parameter_means,
+        parameter_std_devs=parameter_std_devs,
+        load_all=load_all,
+    )
     ds.traces = ds.traces.to(device)
     ds.parameters = ds.parameters.to(device)
     ds.parameter_means = ds.parameter_means.to(device)
