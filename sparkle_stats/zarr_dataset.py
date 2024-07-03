@@ -94,7 +94,8 @@ class ZarrDataset(Dataset):
             trace = torch.from_numpy(trace.astype(np.float32))
             parameters = torch.from_numpy(parameters.astype(np.float32))
 
-        parameters = (parameters - self.means) / self.std_devs
+        trace = trace / self.trace_mean
+        parameters = (parameters - self.parameter_means) / self.parameter_std_devs
 
         return trace, parameters
 
