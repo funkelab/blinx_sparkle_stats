@@ -65,14 +65,24 @@ class ZarrDataset(Dataset):
         self.parameters_means = np.load(parameters_means_path)
         self.parameters_std_devs = np.load(parameters_std_devs_path)
 
+        self.traces_mean = torch.from_numpy(
+            np.array(self.traces_mean).astype(np.float32)
+        )
+        self.parameters_means = torch.from_numpy(
+            np.array(self.parameters_means).astype(np.float32)
+        )
+        self.parameters_std_devs = torch.from_numpy(
+            np.array(self.parameters_std_devs).astype(np.float32)
+        )
+
         self.load_all = load_all
         if self.load_all:
             # load into memory
-            self.traces = np.array(self.traces)
-            self.parameters = np.array(self.parameters)
+            self.traces = np.array(self.traces).astype(np.float32)
+            self.parameters = np.array(self.parameters).astype(np.float32)
             # convert to torch
-            self.traces = torch.from_numpy(self.traces.astype(np.float32))
-            self.parameters = torch.from_numpy(self.parameters.astype(np.float32))
+            self.traces = torch.from_numpy(self.traces)
+            self.parameters = torch.from_numpy(self.parameters)
 
         self.trace_count = self.traces.shape[0]
         self.trace_length = self.traces.shape[1]
