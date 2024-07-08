@@ -5,7 +5,7 @@ import torch
 import zarr
 from torch.utils.data import Dataset
 
-from sparkle_stats.sample_parameters import PARAMETER_COUNT
+from sparkle_stats.generate_dataset import get_file_paths_from_base
 
 
 class ZarrDataset(Dataset):
@@ -14,9 +14,7 @@ class ZarrDataset(Dataset):
     def __init__(
         self,
         data_dir,
-        trace_mean=None,
-        parameter_means=None,
-        parameter_std_devs=None,
+        normalization_data_dir=None,
         load_all=False,
     ):
         """
@@ -32,30 +30,49 @@ class ZarrDataset(Dataset):
         if not os.path.isdir(data_dir):
             raise NotADirectoryError(f"Found file at {data_dir} expected directory")
 
-        self.traces_path = os.path.join(data_dir, "traces")
-        self.parameters_path = os.path.join(data_dir, "parameters")
+        if normalization_data_dir is None:
+            normalization_data_dir = data_dir
 
-        if not os.path.exists(self.traces_path):
-            raise FileNotFoundError(f"Can't find traces at {self.traces_path}")
-        if not os.path.exists(self.parameters_path):
-            raise FileNotFoundError(f"Can't find parameters at {self.parameters_path}")
+        if not os.path.exists(normalization_data_dir):
+            raise FileNotFoundError(f"Directory {data_dir} not found")
+        if not os.path.isdir(normalization_data_dir):
+            raise NotADirectoryError(f"Found file at {data_dir} expected directory")
 
-        self.traces = zarr.open(self.traces_path, mode="r")
-        self.parameters = zarr.open(self.parameters_path, mode="r")
+        traces_path, _, parameters_path, _, _, _ = get_file_paths_from_base(data_dir)
+
+        _, traces_mean_path, _, parameters_means_path, parameters_std_devs_path, _ = (
+            get_file_paths_from_base(normalization_data_dir)
+        )
+
+        if not os.path.exists(traces_path):
+            raise FileNotFoundError(f"Can't find traces at {traces_path}")
+        if not os.path.exists(parameters_path):
+            raise FileNotFoundError(f"Can't find parameters at {parameters_path}")
+        if not os.path.exists(traces_mean_path):
+            raise FileNotFoundError(f"Can't find trace mean at {traces_mean_path}")
+        if not os.path.exists(parameters_means_path):
+            raise FileNotFoundError(
+                f"Can't find parameters means at {parameters_means_path}"
+            )
+        if not os.path.exists(parameters_std_devs_path):
+            raise FileNotFoundError(
+                f"Can't find parameters std devs at {parameters_std_devs_path}"
+            )
+
+        self.traces = zarr.open(traces_path, mode="r")
+        self.traces_mean = np.load(traces_mean_path)
+        self.parameters = zarr.open(parameters_path, mode="r")
+        self.parameters_means = np.load(parameters_means_path)
+        self.parameters_std_devs = np.load(parameters_std_devs_path)
 
         self.load_all = load_all
-        if load_all:
+        if self.load_all:
             # load into memory
             self.traces = np.array(self.traces)
             self.parameters = np.array(self.parameters)
             # convert to torch
             self.traces = torch.from_numpy(self.traces.astype(np.float32))
             self.parameters = torch.from_numpy(self.parameters.astype(np.float32))
-
-        if self.traces.ndim != 3:
-            raise ValueError(f"Expected 3d zarr array, found {self.traces.ndim}d")
-        if self.parameters.ndim != 2:
-            raise ValueError(f"Expected 2d zarr array, found {self.parameters.ndim}d")
 
         self.trace_count = self.traces.shape[0]
         self.trace_length = self.traces.shape[1]
@@ -65,102 +82,6 @@ class ZarrDataset(Dataset):
             raise ValueError(
                 f"Found {parameters_length} parameters but {self.trace_count} traces"
             )
-
-        self._load_parameter_std_devs(load_all, parameter_std_devs)
-        self._load_parameter_means(load_all, parameter_means)
-        self._load_trace_mean(load_all, trace_mean)
-
-    # noinspection DuplicatedCode
-    def _load_parameter_std_devs(self, load_all, parameter_std_devs):
-        if parameter_std_devs is not None and parameter_std_devs.shape != (
-            1,
-            PARAMETER_COUNT,
-        ):
-            raise ValueError(
-                f"Expected standard deviations to be of shape (1 x {PARAMETER_COUNT}), found {parameter_std_devs.shape}"
-            )
-        elif parameter_std_devs is not None:
-            self.parameter_std_devs = parameter_std_devs
-        elif parameter_std_devs is None and load_all:
-            self.parameter_std_devs = torch.std(self.parameters, axis=0).reshape(1, -1)
-        else:
-            existing_parameter_std_devs_path = os.path.join(
-                self.parameters_path, "std_devs"
-            )
-            if parameter_std_devs is None and os.path.exists(
-                existing_parameter_std_devs_path
-            ):
-                self.parameter_std_devs = torch.load(
-                    existing_parameter_std_devs_path, map_location=torch.device("cpu")
-                )
-                if self.parameter_std_devs.shape != (1, PARAMETER_COUNT):
-                    raise ValueError(
-                        f"Found existing std_devs at {existing_parameter_std_devs_path} with shape {self.parameter_std_devs.shape}, expected shape (1 x {PARAMETER_COUNT})"
-                    )
-            elif parameter_std_devs is None:
-                self.parameter_std_devs = np.mean(self.parameters, axis=0).reshape(
-                    1, -1
-                )
-                torch.save(self.parameter_std_devs, existing_parameter_std_devs_path)
-
-        self.parameter_std_devs = self.parameter_std_devs.reshape(1, -1)
-
-    # noinspection DuplicatedCode
-    def _load_parameter_means(self, load_all, parameter_means):
-        if parameter_means is not None and parameter_means.shape != (
-            1,
-            PARAMETER_COUNT,
-        ):
-            raise ValueError(
-                f"Expected means to be of shape (1 x {PARAMETER_COUNT}), found {parameter_means.shape}"
-            )
-        elif parameter_means is not None:
-            self.parameter_means = parameter_means
-        elif parameter_means is None and load_all:
-            self.parameter_means = torch.mean(self.parameters, axis=0).reshape(1, -1)
-        else:
-            existing_parameter_means_path = os.path.join(self.parameters_path, "means")
-            if parameter_means is None and os.path.exists(
-                existing_parameter_means_path
-            ):
-                self.parameter_means = torch.load(
-                    existing_parameter_means_path, map_location=torch.device("cpu")
-                )
-                if self.parameter_means.shape != (1, PARAMETER_COUNT):
-                    raise ValueError(
-                        f"Found existing means at {existing_parameter_means_path} with shape {self.parameter_means.shape}, expected shape (1 x {PARAMETER_COUNT})"
-                    )
-            elif parameter_means is None:
-                self.parameter_means = np.mean(self.parameters, axis=0).reshape(1, -1)
-                torch.save(self.parameter_means, existing_parameter_means_path)
-
-        self.parameter_means = self.parameter_means.reshape(1, -1)
-
-    # noinspection DuplicatedCode
-    def _load_trace_mean(self, load_all, trace_mean):
-        if trace_mean is not None and trace_mean.shape != (1, 1):
-            raise ValueError(
-                f"Expected means to be of shape (1, 1), found {trace_mean.shape}"
-            )
-        elif trace_mean is not None:
-            self.trace_mean = trace_mean
-        elif trace_mean is None and load_all:
-            self.trace_mean = torch.mean(self.traces[:, :, 0].reshape(1, -1))
-        else:
-            existing_trace_means_path = os.path.join(self.traces_path, "means")
-            if trace_mean is None and os.path.exists(existing_trace_means_path):
-                self.trace_mean = torch.load(
-                    existing_trace_means_path, map_location=torch.device("cpu")
-                )
-                if self.trace_mean.shape != (1, PARAMETER_COUNT):
-                    raise ValueError(
-                        f"Found existing means at {existing_trace_means_path} with shape {self.trace_mean.shape}, expected shape (1)"
-                    )
-            elif trace_mean is None:
-                self.trace_mean = np.mean(self.traces, axis=0).reshape(1, -1)
-                torch.save(self.trace_mean, existing_trace_means_path)
-
-        self.trace_mean = self.trace_mean.reshape(1, -1)
 
     def __len__(self):
         return self.trace_count
@@ -175,8 +96,8 @@ class ZarrDataset(Dataset):
             trace = torch.from_numpy(trace.astype(np.float32))
             parameters = torch.from_numpy(parameters.astype(np.float32))
 
-        trace = trace / self.trace_mean
-        parameters = (parameters - self.parameter_means) / self.parameter_std_devs
+        trace = trace / self.traces_mean
+        parameters = (parameters - self.parameters_means) / self.parameters_std_devs
 
         return trace, parameters
 

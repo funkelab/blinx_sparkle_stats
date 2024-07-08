@@ -12,6 +12,24 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
+def get_file_paths_from_base(data_dir):
+    traces_path = os.path.join(data_dir, "traces")
+    traces_mean_path = os.path.join(data_dir, "traces_mean") + ".npy"
+    parameters_path = os.path.join(data_dir, "parameters")
+    parameters_means_path = os.path.join(data_dir, "parameters_means") + ".npy"
+    parameters_std_devs_path = os.path.join(data_dir, "parameters_std_devs") + ".npy"
+    y_path = os.path.join(data_dir, "y")
+
+    return (
+        traces_path,
+        traces_mean_path,
+        parameters_path,
+        parameters_means_path,
+        parameters_std_devs_path,
+        y_path,
+    )
+
+
 def generate_zarr_dataset(
     data_dir,
     y_list,
@@ -52,10 +70,9 @@ def generate_zarr_dataset(
             f"Can't split {total_traces} traces into chunks of size {traces_per_chunk}"
         )
 
+    traces_path, _, parameters_path, _, _, y_path = get_file_paths_from_base(data_dir)
+
     # the zarr is stored as an NxTx2 array, packing both the traces and states together
-    traces_path = os.path.join(data_dir, "traces")
-    parameters_path = os.path.join(data_dir, "parameters")
-    y_path = os.path.join(data_dir, "y")
     zarr_traces = zarr.open(
         traces_path,
         mode="w",
@@ -111,6 +128,8 @@ def generate_zarr_dataset(
         logger.debug(f"wrote states for y={y}")
 
         logger.info(f"finished for y={y}")
+
+    save_normalization_factors(data_dir)
 
 
 def generate_memory_dataset(
@@ -173,3 +192,40 @@ def generate_memory_dataset(
     )
 
     return traces_and_states, all_parameters, all_ys
+
+
+def save_normalization_factors(data_dir):
+    (
+        traces_path,
+        traces_mean_path,
+        parameters_path,
+        parameters_means_path,
+        parameters_std_devs_path,
+        _,
+    ) = get_file_paths_from_base(data_dir)
+
+    traces = zarr.open(traces_path, mode="r")
+
+    logger.debug("starting calculating mean for traces")
+    traces_mean = np.array(np.mean(traces)).reshape(1, 1)
+    logger.debug("finished calculating mean for traces")
+    np.save(traces_mean_path, traces_mean)
+    logger.debug("saved mean for traces")
+
+    parameters = zarr.open(parameters_path, mode="r")
+
+    logger.debug("starting calculating means for parameters")
+    parameters_means = np.array(np.mean(parameters, axis=0)).reshape(1, -1)
+    logger.debug("finished calculating means for parameters")
+    np.save(parameters_means_path, parameters_means)
+    logger.debug("saved mean for parameters")
+
+    logger.debug("starting calculating std devs for parameters")
+    parameters_std_devs = np.array(
+        np.std(parameters, mean=parameters_means, axis=0)
+    ).reshape(1, -1)
+    logger.debug("finished calculating std devs for parameters")
+    np.save(parameters_std_devs_path, parameters_std_devs)
+    logger.debug("saved mean for parameters")
+
+    logger.info("finished saving normalization factors")
