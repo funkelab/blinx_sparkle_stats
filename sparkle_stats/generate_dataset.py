@@ -36,6 +36,7 @@ def generate_zarr_dataset(
     traces_per_y,
     num_frames,
     hyper_parameters,
+    sample_func=sample_parameters,
     traces_per_chunk=100_000,
     seed=None,
 ):
@@ -52,6 +53,8 @@ def generate_zarr_dataset(
             - length of a single trace
         hyper_parameters (:class:`HyperParameters`):
             - hyper parameters used for generating traces
+        sample_func (function (num_params, seed) -> parameters array):
+            - function used to sample parameters
         traces_per_chunk (int, optional):
             - how many traces to store in 1 zarr chunk
         seed (int, optional):
@@ -98,7 +101,7 @@ def generate_zarr_dataset(
         logger.debug(f"wrote y's for y={y}")
 
         logger.debug(f"starting generating parameters for y={y}")
-        parameters = sample_parameters(
+        parameters = sample_func(
             num_params=traces_per_y,
             seed=seed,
         )
@@ -137,6 +140,7 @@ def generate_memory_dataset(
     traces_per_y,
     num_frames,
     hyper_parameters,
+    sample_func=sample_parameters,
     seed=None,
 ):
     """Generates a dataset in memory.
@@ -150,6 +154,8 @@ def generate_memory_dataset(
             - length of a single trace
         hyper_parameters (:class:`HyperParameters`):
             - hyper parameters used for generating traces
+        sample_func (function (num_params, seed) -> parameters array):
+            - function used to sample parameters
         seed (int, optional):
             - random seed for the jax psudo rendom number generator
 
@@ -168,7 +174,7 @@ def generate_memory_dataset(
     all_parameters = []
     all_ys = []
     for y in y_list:
-        parameters = sample_parameters(
+        parameters = sample_func(
             num_params=traces_per_y,
             seed=seed,
         )
