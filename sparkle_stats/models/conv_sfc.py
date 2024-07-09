@@ -10,9 +10,14 @@ class ConvSFC(nn.Module):
 
         self.input_size = input_size
 
-        self.conv1 = nn.Conv1d(1, 2, kernel_size=3, padding=1)
+        self.conv_network = nn.Sequential(
+            nn.Conv1d(1, 2, kernel_size=3, padding=1),
+            nn.ReLU(inplace=True),
+            nn.Conv1d(2, 2, kernel_size=3, padding=1),
+            nn.ReLU(inplace=True),
+        )
 
-        self.network = nn.Sequential(
+        self.fc_network = nn.Sequential(
             nn.Linear(input_size, 2048),
             nn.ReLU(inplace=True),
             nn.Linear(2048, 1024),
@@ -23,8 +28,8 @@ class ConvSFC(nn.Module):
         )
 
     def forward(self, raw):
-        out = self.conv1(raw)
+        out = self.conv_network(raw)
         out = torch.sum(out, dim=1, keepdim=True)
-        out = self.network(out)
+        out = self.fc_network(out)
 
         return out
