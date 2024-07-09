@@ -47,13 +47,13 @@ class SimpleVgg(nn.Module):
 
         # feed forward at the end of the cnn
         classifier = [
-            nn.Linear(current_size * current_feature_maps, 4096),
+            nn.Linear(current_size * current_feature_maps, 2048),
             nn.ReLU(inplace=True),
-            # nn.Dropout(),
-            nn.Linear(4096, 4096),
+            nn.Linear(2048, 1024),
             nn.ReLU(inplace=True),
-            # nn.Dropout(),
-            nn.Linear(4096, output_classes),
+            nn.Linear(1024, 512),
+            nn.ReLU(inplace=True),
+            nn.Linear(512, output_classes),
         ]
 
         self.classifier = nn.Sequential(*classifier)
