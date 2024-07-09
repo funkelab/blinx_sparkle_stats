@@ -1,3 +1,4 @@
+from .conv_sfc import ConvSFC
 from .resnet1d import ResNet1D
 from .simple_fully_connected import SimpleFullyConnected
 from .vgg1d import Vgg1D
@@ -8,4 +9,5 @@ __all__ = [
     "SimpleFullyConnected",
     "ResNet1D",
     "SimpleVgg",
+    "ConvSFC",
 ]
