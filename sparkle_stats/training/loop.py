@@ -17,6 +17,8 @@ def train_epoch(
         optimizer.zero_grad()
 
         outputs = model(inputs)
+        outputs = outputs.squeeze(1)
+        labels = labels.squeeze(1)
 
         loss = loss_fn(outputs, labels)
         loss_value = loss.item()
@@ -40,6 +42,9 @@ def validate_epoch(
             inputs, labels = data
 
             outputs = model(inputs)
+            outputs = outputs.squeeze(1)
+            labels = labels.squeeze(1)
+
             loss = loss_fn(outputs, labels)
             running_loss += loss.item()
 
