@@ -131,7 +131,7 @@ class ZarrStateOnlyDataset(ZarrDataset):
     def __getitem__(self, item):
         trace, parameters = super().__getitem__(item)
         trace = trace[1, :].unsqueeze(0)
-        parameters = parameters[[5, 6]]
+        parameters = parameters[:, [5, 6]]
         return trace, parameters
 
     @property
