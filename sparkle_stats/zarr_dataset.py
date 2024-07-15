@@ -75,8 +75,8 @@ class ZarrDataset(Dataset):
             np.array(self.parameters_std_devs).astype(np.float32)
         )
 
-        self.load_all = load_all
-        if self.load_all:
+        self.__load_all = load_all
+        if self.__load_all:
             # load into memory
             self.traces = np.array(self.traces).astype(np.float32)
             self.parameters = np.array(self.parameters).astype(np.float32)
@@ -102,7 +102,7 @@ class ZarrDataset(Dataset):
         trace = self.traces[item, :, :].T
         parameters = self.parameters[item, :].reshape(-1)
 
-        if not self.load_all:
+        if not self.__load_all:
             trace = torch.from_numpy(trace.astype(np.float32))
             parameters = torch.from_numpy(parameters.astype(np.float32))
 
