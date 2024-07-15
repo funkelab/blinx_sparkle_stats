@@ -13,7 +13,7 @@ license = { text = "MIT" }
 authors = [
     { name = "Jan Funke", email = "funkej@janelia.hhmi.org" },
     { name = "Alex Hillsley", email = "hillsleya@janelia.hhmi.org" },
-    { name = "Alex Hillsley", email = "thambiduraiy@janelia.hhmi.org" },
+    { name = "Yogesh Thambidurai", email = "thambiduraiy@janelia.hhmi.org" },
 ]
 dynamic = ["version"]
 dependencies = [
