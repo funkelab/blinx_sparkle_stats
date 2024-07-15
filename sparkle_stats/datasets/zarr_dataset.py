@@ -117,9 +117,13 @@ class ZarrDataset(Dataset):
             trace = torch.from_numpy(trace.astype(np.float32))
             parameters = torch.from_numpy(parameters.astype(np.float32))
 
+        # have to clone the trace so that the first dimension isn't overwritten
+        # otherwise results in bug where get_item changes the backing array
+        trace = trace.clone()
         trace[0] = (trace[0] - self.traces_min) / (
             self.traces_max - self.traces_min
         ) * 2 - 1
+
         parameters = (parameters - self.parameters_min) / (
             self.parameters_max - self.parameters_min
         ) * 2 - 1
