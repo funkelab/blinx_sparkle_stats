@@ -75,6 +75,9 @@ class ZarrDataset(Dataset):
             np.array(self.parameters_std_devs).astype(np.float32)
         )
 
+        # torch data loader changes the data if there is an attribute named "load_all" set to true on this class.
+        # obfuscating the name to __load_all fixes the problem?
+        # can't reproduce
         self.__load_all = load_all
         if self.__load_all:
             # load into memory
