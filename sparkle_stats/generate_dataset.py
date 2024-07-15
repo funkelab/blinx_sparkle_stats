@@ -103,7 +103,7 @@ def generate_zarr_dataset(
         y_path,
         mode="w",
         shape=(len(y_list) * traces_per_y),
-        chunks=(1),
+        chunks=(traces_per_chunk),
     )
 
     traces_max = np.repeat(-np.inf, 1).reshape(-1)
