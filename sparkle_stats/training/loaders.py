@@ -16,10 +16,11 @@ def load_path(
     )
     if load_all:
         ds.traces = ds.traces.to(device)
-        ds.traces_mean = ds.traces_mean.to(device)
+        ds.traces_max = ds.traces_max.to(device)
+        ds.traces_min = ds.traces_min.to(device)
         ds.parameters = ds.parameters.to(device)
-        ds.parameters_means = ds.parameters_means.to(device)
-        ds.parameters_std_devs = ds.parameters_std_devs.to(device)
+        ds.parameters_max = ds.parameters_max.to(device)
+        ds.parameters_min = ds.parameters_min.to(device)
 
     loader = DataLoader(ds, batch_size=batch_size, shuffle=True)
     return ds, loader
