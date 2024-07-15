@@ -70,18 +70,22 @@ def train(
         model.train()
         avg_train_loss = train_epoch(train_loader, model, optimizer, loss_fn)
 
-        if use_wandb:
-            wandb.log({"average training loss": avg_train_loss})
         print(f"\n\ntrain loss:\t{avg_train_loss}")
 
         model.eval()
         avg_val_loss = validate_epoch(val_loader, model, loss_fn)
 
-        if use_wandb:
-            wandb.log({"average validation loss": avg_val_loss})
         print(f"val loss:\t{avg_val_loss}")
 
         epoch_number += 1
+
+        if use_wandb:
+            wandb.log(
+                {
+                    "average training loss": avg_train_loss,
+                    "average validation loss": avg_val_loss,
+                }
+            )
 
         if epoch_number % 5 == 0 or epoch_number == 1 or epoch_number == epochs:
             path = os.path.join(save_path, f"epoch_{epoch_number}")
