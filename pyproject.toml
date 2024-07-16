@@ -59,6 +59,7 @@ select = [
 # errors on a lot of docstrings
 # can unignore and do `ruff check --add-noqa` instead
 ignore = ["E501"]
+pydocstyle.convention = "google"
 
 # https://coverage.readthedocs.io/en/6.4/config.html
 [tool.coverage.report]
