@@ -8,10 +8,10 @@ from .vgg_simple import SimpleVgg
 
 __all__ = [
     "Attention",
-    "Vgg1D",
-    "SimpleFullyConnected",
+    "ConvSFC",
     "GiganticMLP",
     "ResNet1D",
+    "SimpleFullyConnected",
     "SimpleVgg",
-    "ConvSFC",
+    "Vgg1D",
 ]
