@@ -15,12 +15,15 @@ class ZarrDataset(Dataset):
         self,
         data_dir,
         normalization_data_dir=None,
+        normalize_parameters=True,
         load_all=False,
     ):
         """
         Args:
             data_dir (string):
                 - path where the traces and parameters are saved
+            normalize_parameters (bool):
+                - whether to normalize the parameters
             load_all (bool, optional):
                 - whether to load everything into memory at once
         """
@@ -47,8 +50,11 @@ class ZarrDataset(Dataset):
         _path_exists(traces_min_path, "traces min")
         _path_exists(traces_max_path, "traces max")
         _path_exists(parameters_path, "parameters")
-        _path_exists(parameters_min_path, "parameters min")
-        _path_exists(parameters_max_path, "parameters max")
+
+        self.normalize_parameters = normalize_parameters
+        if self.normalize_parameters:
+            _path_exists(parameters_min_path, "parameters min")
+            _path_exists(parameters_max_path, "parameters max")
 
         traces = zarr.open(traces_path, mode="r")
         parameters = zarr.open(parameters_path, mode="r")
@@ -72,12 +78,13 @@ class ZarrDataset(Dataset):
 
         self.traces_max = torch.from_numpy(np.load(traces_max_path).astype(np.float32))
         self.traces_min = torch.from_numpy(np.load(traces_min_path).astype(np.float32))
-        self.parameters_max = torch.from_numpy(
-            np.load(parameters_max_path).astype(np.float32)
-        )
-        self.parameters_min = torch.from_numpy(
-            np.load(parameters_min_path).astype(np.float32)
-        )
+        if self.normalize_parameters:
+            self.parameters_max = torch.from_numpy(
+                np.load(parameters_max_path).astype(np.float32)
+            )
+            self.parameters_min = torch.from_numpy(
+                np.load(parameters_min_path).astype(np.float32)
+            )
 
     def __len__(self):
         return self.trace_count
@@ -103,9 +110,12 @@ class ZarrDataset(Dataset):
         trace_z = tensor_trace[1]
         trace = torch.vstack((trace_intensity, trace_z))
 
-        parameters = (tensor_parameters - self.parameters_min) / (
-            self.parameters_max - self.parameters_min
-        ) * 2 - 1
+        if self.normalize_parameters:
+            parameters = (tensor_parameters - self.parameters_min) / (
+                self.parameters_max - self.parameters_min
+            ) * 2 - 1
+        else:
+            parameters = tensor_parameters.unsqueeze(0)
 
         return trace, parameters
 
