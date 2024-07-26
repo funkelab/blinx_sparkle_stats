@@ -60,6 +60,7 @@ def train(
     loss_fn,
     save_path,
     use_wandb=True,
+    maximize=False,
 ):
     epoch_number = 0
     best_val_loss = None
@@ -91,7 +92,11 @@ def train(
             path = os.path.join(save_path, f"epoch_{epoch_number}")
             torch.save(model.state_dict(), path)
 
-        if best_val_loss is None or avg_val_loss < best_val_loss:
+        if (
+            best_val_loss is None
+            or (maximize and avg_val_loss > best_val_loss)
+            or (not maximize and avg_val_loss < best_val_loss)
+        ):
             best_val_loss = avg_val_loss
             path = os.path.join(save_path, "best")
             print(f"saving best on epoch {epoch_number}")
