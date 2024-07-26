@@ -1,7 +1,7 @@
 import torch
 
 
-def likelihood_loss(labels, predictions):
+def likelihood_loss(predictions, labels, epsilon=1e-5):
     # labels: B, 2*classes
     # predictions: B, classes
     assert (
@@ -30,7 +30,7 @@ def likelihood_loss(labels, predictions):
     predictions = predictions.reshape(-1, num_classes, 2)
 
     means = predictions[:, :, 0]
-    variances = predictions[:, :, 1]
+    variances = torch.abs(predictions[:, :, 1]) + epsilon
     dist = torch.distributions.Normal(means, variances)
     probs = dist.log_prob(labels)
-    return probs.sum(axis=1)
+    return probs.sum(axis=1).mean()

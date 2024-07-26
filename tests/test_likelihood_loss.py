@@ -8,15 +8,15 @@ def test_likelihood_loss():
     labels = torch.arange(5 * 7).reshape(5, 7)
     predictions = torch.arange(5 * 7 * 2).reshape(5, 7 * 2)
 
-    loss = likelihood_loss(labels, predictions)
-    assert loss.shape == (5,)
+    loss = likelihood_loss(predictions, labels)
+    assert loss.shape == (1,)
 
 
 def test_likelihood_loss_against_jax():
     labels = torch.tensor([[0.0]])
     predictions = torch.tensor([[0.0, 1.0]])
 
-    loss = likelihood_loss(labels, predictions)
+    loss = likelihood_loss(predictions, labels)
     assert loss.shape == (1,)
 
     jax_loss = jax.scipy.stats.norm.logpdf(0.0, 0.0, 1.0)
