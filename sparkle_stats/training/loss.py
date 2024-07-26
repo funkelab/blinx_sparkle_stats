@@ -1,7 +1,7 @@
 import torch
 
 
-def likelihood_loss(predictions, labels, epsilon=1e-5):
+def likelihood_loss(predictions, labels, backing_loss_fn, epsilon=1e-5):
     # labels: B, 2*classes
     # predictions: B, classes
     assert (
@@ -32,5 +32,6 @@ def likelihood_loss(predictions, labels, epsilon=1e-5):
     means = predictions[:, :, 0]
     variances = torch.abs(predictions[:, :, 1]) + epsilon
     dist = torch.distributions.Normal(means, variances)
-    probs = dist.log_prob(labels)
-    return probs.sum(axis=1).mean()
+    # reparameterization trick
+    sample = dist.rsample()
+    return backing_loss_fn(sample, labels)
