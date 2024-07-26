@@ -11,7 +11,11 @@ def test_generate_memory_dataset():
     seed = 1
 
     traces, parameters, all_ys = generate_memory_dataset(
-        y_list, traces_per_y, num_frames, hyper_parameters, seed
+        y_list,
+        traces_per_y,
+        num_frames,
+        hyper_parameters,
+        seed=seed,
     )
 
     assert traces.shape == (len(y_list) * traces_per_y, num_frames, 2)
