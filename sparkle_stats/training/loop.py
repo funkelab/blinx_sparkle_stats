@@ -1,4 +1,5 @@
 import os
+from functools import partial
 
 import torch
 import wandb
@@ -23,6 +24,8 @@ def train_epoch(
         loss = loss_fn(outputs, labels)
         loss_value = loss.item()
         loss.backward()
+
+        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
 
         running_loss += loss_value
 
@@ -75,6 +78,60 @@ def train(
 
         model.eval()
         avg_val_loss = validate_epoch(val_loader, model, loss_fn)
+
+        print(f"val loss:\t{avg_val_loss}")
+
+        epoch_number += 1
+
+        if use_wandb:
+            wandb.log(
+                {
+                    "average training loss": avg_train_loss,
+                    "average validation loss": avg_val_loss,
+                }
+            )
+
+        if epoch_number % 5 == 0 or epoch_number == 1 or epoch_number == epochs:
+            path = os.path.join(save_path, f"epoch_{epoch_number}")
+            torch.save(model.state_dict(), path)
+
+        if (
+            best_val_loss is None
+            or (maximize and avg_val_loss > best_val_loss)
+            or (not maximize and avg_val_loss < best_val_loss)
+        ):
+            best_val_loss = avg_val_loss
+            path = os.path.join(save_path, "best")
+            print(f"saving best on epoch {epoch_number}")
+            torch.save(model.state_dict(), path)
+
+
+def train_with_alpha(
+    epochs,
+    train_loader,
+    val_loader,
+    model,
+    optimizer,
+    loss_fn,
+    save_path,
+    alpha_sample_func,
+    use_wandb=True,
+    maximize=False,
+):
+    epoch_number = 0
+    best_val_loss = None
+
+    for epoch in range(epochs):
+        print(f"\n\n\n\nEPOCH {epoch}\n\n")
+        loss_alpha = partial(loss_fn, alpha=alpha_sample_func(epoch))
+
+        model.train()
+        avg_train_loss = train_epoch(train_loader, model, optimizer, loss_alpha)
+
+        print(f"\n\ntrain loss:\t{avg_train_loss}")
+
+        model.eval()
+        avg_val_loss = validate_epoch(val_loader, model, loss_alpha)
 
         print(f"val loss:\t{avg_val_loss}")
 

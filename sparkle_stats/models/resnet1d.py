@@ -27,6 +27,7 @@ class ResNet1D(nn.Module):
         )
         self.bn = nn.BatchNorm1d(self.in_channels)
         self.relu = nn.ReLU()
+        self.output_classes = output_classes
 
         current_channels = self.in_channels
         self.layer1 = self.make_layer(ResidualBlock, current_channels, 2, 2)
@@ -39,6 +40,7 @@ class ResNet1D(nn.Module):
 
         self.avgpool = nn.AdaptiveAvgPool1d(1)
         self.fc = nn.Linear(current_channels, output_classes)
+        self.relu = nn.ReLU()
 
     def make_layer(self, block, out_channels, blocks, stride=1):
         downsample = None
@@ -70,6 +72,12 @@ class ResNet1D(nn.Module):
         out = self.avgpool(out)
         out = torch.flatten(out, 1)
         out = self.fc(out)
+        out = torch.hstack(
+            (
+                out[:, : self.output_classes // 2],
+                self.relu(out[:, self.output_classes // 2 :]),
+            )
+        )
         return out
 
 
