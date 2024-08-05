@@ -4,6 +4,8 @@ from sparkle_stats.sample_parameters import PARAMETER_COUNT
 
 
 class SimpleFullyConnected(nn.Module):
+    "Simple fully connected model."
+
     def __init__(self, output_classes=PARAMETER_COUNT, input_size=4000):
         super().__init__()
 

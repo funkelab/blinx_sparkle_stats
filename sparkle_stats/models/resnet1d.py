@@ -6,6 +6,8 @@ from torch import nn
 
 
 class ResNet1D(nn.Module):
+    """1D ResNet model."""
+
     def __init__(self, output_classes, input_channels=1, start_channels=12):
         """
         Args:

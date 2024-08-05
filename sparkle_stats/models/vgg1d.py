@@ -1,7 +1,12 @@
+# 1D VGG implementation based on code from
+# https://github.com/funkelab/funlib.learn.torch/blob/master/funlib/learn/torch/models/vgg2d.py
+
 from torch import nn
 
 
 class Vgg1D(nn.Module):
+    """1D VGG model."""
+
     def __init__(
         self,
         input_size,

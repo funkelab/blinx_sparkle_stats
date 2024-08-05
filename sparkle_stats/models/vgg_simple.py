@@ -2,6 +2,8 @@ from torch import nn
 
 
 class SimpleVgg(nn.Module):
+    """VGG without batchnorm and defaults changed to make the model simpler."""
+
     def __init__(
         self,
         input_size,  # 4000
