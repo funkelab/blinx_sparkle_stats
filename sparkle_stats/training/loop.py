@@ -10,6 +10,7 @@ def train_epoch(
     model,
     optimizer,
     loss_fn,
+    clip_gradient=False,
 ):
     running_loss = 0.0
     for idx, data in enumerate(train_loader):
@@ -25,7 +26,12 @@ def train_epoch(
         loss_value = loss.item()
         loss.backward()
 
-        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+        # Clipping this gradient is what allows the ResNet to learn with likelihood.
+        # Theory is that the log_prob space is so large that the gradients go crazy.
+        # Clipping them stops the model from just guessing zero or large variances.
+        # todo: see if changing the learning rate helps
+        if clip_gradient:
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
 
         running_loss += loss_value
 
@@ -64,6 +70,7 @@ def train(
     save_path,
     use_wandb=True,
     maximize=False,
+    clip_gradient=False,
 ):
     epoch_number = 0
     best_val_loss = None
@@ -72,7 +79,9 @@ def train(
         print(f"\n\n\n\nEPOCH {epoch}\n\n")
 
         model.train()
-        avg_train_loss = train_epoch(train_loader, model, optimizer, loss_fn)
+        avg_train_loss = train_epoch(
+            train_loader, model, optimizer, loss_fn, clip_gradient=clip_gradient
+        )
 
         print(f"\n\ntrain loss:\t{avg_train_loss}")
 
@@ -117,6 +126,7 @@ def train_with_alpha(
     alpha_sample_func,
     use_wandb=True,
     maximize=False,
+    clip_gradient=False,
 ):
     epoch_number = 0
     best_val_loss = None
@@ -126,7 +136,9 @@ def train_with_alpha(
         loss_alpha = partial(loss_fn, alpha=alpha_sample_func(epoch))
 
         model.train()
-        avg_train_loss = train_epoch(train_loader, model, optimizer, loss_alpha)
+        avg_train_loss = train_epoch(
+            train_loader, model, optimizer, loss_alpha, clip_gradient=clip_gradient
+        )
 
         print(f"\n\ntrain loss:\t{avg_train_loss}")
 

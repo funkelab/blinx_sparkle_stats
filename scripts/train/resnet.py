@@ -113,4 +113,7 @@ train_with_alpha(
     alpha_sample_func=alpha_sample_func,
     # need to set this along size maximize=True for optimizer
     maximize=True,
+    # ResNet with likelihood needs clipped gradients
+    # todo: see if changing optimizer learning rate helps
+    clip_gradient=True,
 )
