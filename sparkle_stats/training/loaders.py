@@ -10,6 +10,39 @@ def load_path(
     batch_size=100,
     normalize_parameters=True,
 ):
+    """
+    Loads a dataset into a DataLoader.
+
+    Args:
+        dataset_type (class):
+            - the dataset class to load. Must match the signature of `datasets.ZarrDataset`
+
+        path (string):
+            - full path where the traces and parameters are saved
+
+        device (torch.device):
+            - the device to load the data onto
+
+        normalization_data_dir (string, optional):
+            - path where the normalization data is saved
+            - if None, will use `path`
+
+        load_all (bool, optional):
+            - whether to load everything into memory at once
+
+        batch_size (int, optional):
+            - the batch size to use
+
+        normalize_parameters (bool):
+            - whether to normalize the parameters
+
+    Returns:
+        ds (dataset_type):
+            - the dataset object
+
+        loader (DataLoader):
+            - the DataLoader object
+    """
     ds = dataset_type(
         path,
         normalization_data_dir=normalization_data_dir,

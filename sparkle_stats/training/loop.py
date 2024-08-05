@@ -72,6 +72,32 @@ def train(
     maximize=False,
     clip_gradient=False,
 ):
+    """
+    Training loop for a PyTorch model.
+
+    Args:
+        - epochs (int):
+            - The number of training epochs.
+        - train_loader (DataLoader):
+            - The data loader for the training set.
+        - val_loader (DataLoader):
+            - The data loader for the validation set.
+        - model (nn.Module):
+            - The PyTorch model to be trained.
+        - optimizer (Optimizer):
+            - The optimizer used for training.
+        - loss_fn (Callable[[torch.Tensor, torch.Tensor], torch.Tensor]):
+            - The loss function used for training.
+        - save_path (str):
+            - The path to save the model checkpoints
+        - use_wandb (bool, optional):
+            - Whether to use wandb for logging. Defaults to True.
+        - maximize (bool, optional):
+            - If false, save as validation loss decreases. If true save as the validation loss increases.
+            - Defaults to False.
+        - clip_gradient (bool, optional):
+            - Whether to clip the gradients. Defaults to False.
+    """
     epoch_number = 0
     best_val_loss = None
 
@@ -128,6 +154,34 @@ def train_with_alpha(
     maximize=False,
     clip_gradient=False,
 ):
+    """
+    Training loop for a PyTorch model.
+
+    Args:
+        - epochs (int):
+            - The number of training epochs.
+        - train_loader (DataLoader):
+            - The data loader for the training set.
+        - val_loader (DataLoader):
+            - The data loader for the validation set.
+        - model (nn.Module):
+            - The PyTorch model to be trained.
+        - optimizer (Optimizer):
+            - The optimizer used for training.
+        - loss_fn (Callable[[torch.Tensor, torch.Tensor, float], torch.Tensor]):
+            - The loss function used for training. Takes an additional alpha parameter for loss easing.
+        - save_path (str):
+            - The path to save the model checkpoints
+        - alpha_sample_func (Callable[[int], float]):
+            - Function that takes the epoch number and returns an alpha value passed to the loss function.
+        - use_wandb (bool, optional):
+            - Whether to use wandb for logging. Defaults to True.
+        - maximize (bool, optional):
+            - If false, save as validation loss decreases. If true save as the validation loss increases.
+            - Defaults to False.
+        - clip_gradient (bool, optional):
+            - Whether to clip the gradients. Defaults to False.
+    """
     epoch_number = 0
     best_val_loss = None
 
