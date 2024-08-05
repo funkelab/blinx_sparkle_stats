@@ -9,7 +9,21 @@ from sparkle_stats.generate_dataset import get_file_paths_from_base
 
 
 class ZarrDataset(Dataset):
-    """A dataset stored on the filesystem as a trace zarr and a parameter zarr."""
+    """A dataset stored on the filesystem as zarr and numpy arrays.
+
+    The dataset is expected to have the following directories:
+        - `traces/`: (BxTx2) traces zarr array
+        - `parameters/`: (Bx7) parameters zarr array
+        - `y/`: (Bx1) y zarr array
+
+    If `normalized_parameters=True`, it is also expected to have the following files:
+        - `traces_max.npy`: numpy array with a single element, the maximum intensity value across all traces in the dataset
+        - `traces_min.npy`: numpy array with a single element, the minimum intensity value across all traces in the dataset
+        - `parameters_max.npy`: numpy array with a single element, the maximum parameter value across all parameters in the dataset
+        - `parameters_min.npy`: numpy array with a single element, the minimum parameter value across all parameters in the dataset
+
+    If the dataset is generated with `sparkle_stats.generate_dataset`, the above structure will be created.
+    """
 
     def __init__(
         self,
@@ -22,6 +36,9 @@ class ZarrDataset(Dataset):
         Args:
             data_dir (string):
                 - path where the traces and parameters are saved
+            normalization_data_dir (string, optional):
+                - path where the normalization data is saved
+                - if None, will use `data_dir`
             normalize_parameters (bool):
                 - whether to normalize the parameters
             load_all (bool, optional):
@@ -90,6 +107,12 @@ class ZarrDataset(Dataset):
         return self.trace_count
 
     def __getitem__(self, item):
+        """Get a single trace.
+
+        Returns:
+            - trace (torch.Tensor): (2xT) tensor of intensity and z states
+            - parameters (torch.Tensor): (7,) tensor of parameters
+        """
         # is currently NxTxC
         # reshape into CxT
         raw_trace = self.traces[item, :, :].T
@@ -121,6 +144,7 @@ class ZarrDataset(Dataset):
 
     @property
     def output_classes(self):
+        """Number of parameters __getitem__ will return"""
         return 7
 
 

@@ -2,9 +2,7 @@ from sparkle_stats.datasets.zarr_intensity_only_dataset import ZarrIntensityOnly
 
 
 class PonPoffOnlyDataset(ZarrIntensityOnlyDataset):
-    """
-    Pairs intensity traces with only p_on and p_off
-    """
+    """Pairs intensity traces with only p_on and p_off."""
 
     def __getitem__(self, item):
         t, p = super().__getitem__(item)
