@@ -46,3 +46,9 @@
 - Creates several example trace plots
 - Is not a python CLI and does not need a model
 - The dataset path is hardcoded into the script
+
+## `predict`
+
+- Not actually a visualization script, but rather saves the predictions
+- Uses the same CLI interface as the other visualization scripts
+- Could modify the visualization scripts to load parameters saved from this
