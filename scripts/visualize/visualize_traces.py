@@ -79,16 +79,24 @@ def configure_plot(fig, ax):
 
 # %%
 fig, axs = plt.subplots(3, 2, figsize=(width, height))
-plt.subplots_adjust(hspace=0.2, wspace=0.05)
+fig.text(
+    0.5,
+    0.05,
+    r"\textbf{Time}",
+    ha="center",
+    va="center",
+    fontsize=15,
+)
+
+plt.subplots_adjust(left=0.1, bottom=0.1, right=0.9, top=0.9, hspace=0.2, wspace=0.05)
 
 for i, (item, y) in enumerate(zip(selected_items, selected_y)):
     col = i % 2
     row = i // 2
     ax = axs[row, col]
-    if col == 0 and row == 0:
+    # setting text for fig creates massive margin
+    if col == 0 and row == 1:
         ax.set_ylabel(r"\textbf{Intensity}", fontsize=15)
-    if row == 2 and col == 0:
-        ax.set_xlabel(r"\textbf{Time}", fontsize=15)
     # text box in top right corner
     ax.text(
         1,

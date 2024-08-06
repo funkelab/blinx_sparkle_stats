@@ -136,13 +136,13 @@ def configure_plot(fig, ax):
 bins = 4
 
 names = [
-    r"r_{e}",
-    r"r_{bg}",
-    r"\mu_{\rho}",
-    r"\sigma_{\rho}",
-    r"\text{gain}",
-    r"p_\text{on}",
-    r"p_\text{off}",
+    r"\textbf{Emitter Intensity (\boldmath{$r_{e}$})}",
+    r"\textbf{Background Intensity (\boldmath{$r_{e}$})}",
+    r"\boldmath{\mu_{\rho}}",
+    r"\boldmath{\sigma_{\rho}}",
+    r"\textbf{gain}",
+    r"\textbf{Emitter On Probability (\boldmath{$p_\textbf{on}$})}",
+    r"\textbf{Emitter Off Probability (\boldmath{$p_\textbf{off}$})}",
 ]
 
 # %%
@@ -208,7 +208,7 @@ for ax_idx, param_idx in enumerate(indexes):
 
 for idx, param_idx in enumerate(indexes):
     axs[idx].set_title(
-        r"\boldmath{$" + names[param_idx] + r"$}",
+        names[param_idx],
         fontsize=20,
         fontweight="bold",
         pad=20,

@@ -138,13 +138,13 @@ def configure_plot(fig, ax):
 bins = 4
 
 names = [
-    r"r_{e}",
-    r"r_{bg}",
-    r"\mu_{\rho}",
-    r"\sigma_{\rho}",
-    r"\text{gain}",
-    r"p_\text{on}",
-    r"p_\text{off}",
+    r"\textbf{Emitter Intensity (\boldmath{$r_{e}$})}",
+    r"\textbf{Background Intensity (\boldmath{$r_{e}$})}",
+    r"\boldmath{\mu_{\rho}}",
+    r"\boldmath{\sigma_{\rho}}",
+    r"\textbf{gain}",
+    r"\textbf{Emitter On Probability (\boldmath{$p_\textbf{on}$})}",
+    r"\textbf{Emitter Off Probability (\boldmath{$p_\textbf{off}$})}",
 ]
 
 # %%
@@ -185,13 +185,13 @@ for ax_idx, param_idx in enumerate(indexes):
         # ax.set_ylim([preds.min(), preds.max()])
         if bin_idx == 0:
             ax.set_ylabel(
-                r"\textbf{Predicted \boldmath{$" + names[param_idx] + r"$}}",
+                r"\textbf{Predicted " + names[param_idx] + r"}",
                 fontsize=15,
                 labelpad=5,
                 fontweight="bold",
             )
             ax.set_xlabel(
-                r"\textbf{Actual \boldmath{$" + names[param_idx] + r"$}}",
+                r"\textbf{Actual " + names[param_idx] + r"}",
                 fontsize=15,
                 labelpad=5,
                 fontweight="bold",
