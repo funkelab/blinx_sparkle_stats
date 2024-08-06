@@ -52,3 +52,8 @@
 - Not actually a visualization script, but rather saves the predictions
 - Uses the same CLI interface as the other visualization scripts
 - Could modify the visualization scripts to load parameters saved from this
+
+## `visualize_params`
+
+- Creates plots showing how parameters affect traces
+- Not a CLI and doesn't need any existing dataset (standalone)
