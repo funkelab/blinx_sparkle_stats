@@ -18,8 +18,11 @@ authors = [
 dynamic = ["version"]
 dependencies = [
     "jax",
-    "blinx",
+    "blinx @ git+https://github.com/funkelab/blinx.git",
     "zarr",
+    "matplotlib",
+    "numpy",
+    "torch",
 ]
 
 
@@ -41,6 +44,9 @@ homepage = "https://github.com/funkelab/blinx_sparkle_stats"
 # https://hatch.pypa.io/latest/version/
 [tool.hatch.version]
 path = "sparkle_stats/__init__.py"
+
+[tool.hatch.metadata]
+allow-direct-references = true
 
 # https://docs.astral.sh/ruff/
 [tool.ruff]
