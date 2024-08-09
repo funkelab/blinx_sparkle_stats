@@ -24,7 +24,9 @@ def get_args():
 def validate_args(args):
     model_raw = args.model
     model_path = os.path.join(
-        f"/groups/funke/home/{os.getlogin()}/checkpoints/blinx/", model_raw
+        "/groups/funke/home/thambiduraiy/checkpoints/blinx/",
+        model_raw,
+        #         f"/groups/funke/home/{os.getlogin()}/checkpoints/blinx/", model_raw
     )
 
     if not os.path.exists(model_path):

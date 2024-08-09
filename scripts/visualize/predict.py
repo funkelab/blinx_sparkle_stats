@@ -59,4 +59,4 @@ for data, _ in loader:
 
 outputs = torch.vstack(outputs).detach().numpy()
 
-np.save(model_ds_time_fig_directory)
+np.save(model_ds_time_fig_directory, outputs)
