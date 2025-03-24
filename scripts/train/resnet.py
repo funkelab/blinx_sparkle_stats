@@ -68,9 +68,9 @@ val_ds, val_loader = load_path(
     normalize_parameters=True,
 )
 
-assert (
-    train_ds.trace_length == val_ds.trace_length
-), "Expected train and val to have same trace length"
+assert train_ds.trace_length == val_ds.trace_length, (
+    "Expected train and val to have same trace length"
+)
 
 # %%
 model = ResNet1D(output_classes=train_ds.output_classes * 2, start_channels=32)

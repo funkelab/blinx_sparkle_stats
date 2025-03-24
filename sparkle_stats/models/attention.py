@@ -16,9 +16,9 @@ class Attention(nn.Module):
     ):
         super().__init__()
 
-        assert (
-            embed_dim % num_heads == 0
-        ), "Embedding dimension must be divisible by number of heads"
+        assert embed_dim % num_heads == 0, (
+            "Embedding dimension must be divisible by number of heads"
+        )
         self.input_size = input_size
 
         self.embedding = nn.Linear(input_channels, embed_dim)
