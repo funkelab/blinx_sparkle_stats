@@ -43,9 +43,9 @@ class Vgg1D(nn.Module):
             # check if can downsample
             size = int(current_size / downsample_factors[i])
             check = size * downsample_factors[i] == current_size
-            assert (
-                check
-            ), f"Can not downsample {current_size} by chosen downsample factor"
+            assert check, (
+                f"Can not downsample {current_size} by chosen downsample factor"
+            )
             current_size = size
 
         self.features = nn.Sequential(*features)

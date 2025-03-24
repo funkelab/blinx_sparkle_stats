@@ -5,9 +5,9 @@ from .zarr_intensity_only_dataset import ZarrIntensityOnlyDataset
 from .zarr_state_dataset import ZarrStateOnlyDataset
 
 __all__ = [
-    "ZarrDataset",
-    "ZarrStateOnlyDataset",
-    "ZarrIntensityOnlyDataset",
     "PonPoffOnlyDataset",
     "RePonPoffDataset",
+    "ZarrDataset",
+    "ZarrIntensityOnlyDataset",
+    "ZarrStateOnlyDataset",
 ]
